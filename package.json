@@ -1,0 +1,1 @@
+{"name": "tfrrs","version": "1.0.0","description": "A web scraper for collecting triple jump data from TFRRS","main": "src/index.js","scripts": {"start": "node src/index.js"},"dependencies": {"puppeteer": "^21.0.0","csv-writer": "^1.6.0"}}
