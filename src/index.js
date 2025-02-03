@@ -3,19 +3,34 @@ const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const path = require('path');
 
 async function scrapeTripleJumpData() {
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({ 
+        headless: true,
+        args: ['--no-sandbox', '--disable-setuid-sandbox'] // Add these arguments for Linux
+    });
     const page = await browser.newPage();
 
     try {
-        // Navigate to TFRRS
-        await page.goto('https://tf.tfrrs.org');
+        console.log('Navigating to TFRRS...');
+        // Navigate to TFRRS and wait until network is idle
+        await page.goto('https://tf.tfrrs.org', { 
+            waitUntil: 'networkidle0',
+            timeout: 60000 
+        });
 
-        // Search for 'Cole Goodman'
+        console.log('Waiting for search input...');
+        // Wait for search input to be visible
+        await page.waitForSelector('input[type="text"]', { timeout: 60000 });
+
+        console.log('Typing search query...');
         await page.type('input[type="text"]', 'Cole Goodman');
         await page.keyboard.press('Enter');
 
-        // Wait for results
-        await page.waitForSelector('.results-link');
+        console.log('Waiting for results...');
+        // Increase timeout and add visible: true option
+        await page.waitForSelector('.results-link', { 
+            timeout: 60000,
+            visible: true 
+        });
 
         // Get triple jump results
         const results = await page.evaluate(() => {
@@ -33,7 +48,7 @@ async function scrapeTripleJumpData() {
 
         // Create CSV file
         const csvWriter = createCsvWriter({
-            path: path.join('C:', 'Users', 'Rawhi', 'Documents', 'cole_goodman_tripple_jump.csv'),
+            path: path.join('/home', 'rongoodman', 'Projects', 'tfrrs_data', 'cole_goodman_triple_jump.csv'),
             header: [
                 {id: 'date', title: 'Date'},
                 {id: 'meet', title: 'Meet'},
