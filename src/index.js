@@ -13,7 +13,7 @@ async function scrapeTripleJumpData() {
         console.log('Navigating to TFRRS...');
         // Navigate to TFRRS and wait until network is idle
         await page.goto('https://tf.tfrrs.org', { 
-            waitUntil: 'networkidle0',
+            waitUntil: 'load',
             timeout: 60000 
         });
 
